@@ -30,6 +30,14 @@ async def start(message: Message):
     reply_markup = keyboard
     )
 
+@router.message(F.text == "Отмена")
+async def cancelation_button(message: Message):
+    await message.answer("Вы вернулись в главное меню \n\nВыберите действие", reply_markup=keyboard)
+
+@router.message(F.text =="Вернуться в главное меню 🏠")
+async def home(message: Message):
+    await message.answer("Вы вернулись в главное меню", reply_markup=keyboard)
+
 @router.message(F.text == 'О нас ℹ️')
 async def about(message: Message):
     await message.answer(
@@ -108,7 +116,7 @@ async def support(message: Message, state: FSMContext):
 
     await message.answer(
         "Пожалуйста, введите текст вашего обращения.",
-        reply_markup=ReplyKeyboardRemove()
+        reply_markup=cancel_button
     )
 
 
@@ -143,9 +151,7 @@ async def notanswer(message: Message):
 async def notanswer(message: Message):
     await message.answer("Тогда обратитесь к администрации")
 
-@router.message(F.text =="Вернуться в главное меню 🏠")
-async def home(message: Message):
-    await message.answer("Вы вернулись в главное меню", reply_markup=keyboard)
+
 
 @router.message(F.text == "Вернуться назад 🔙")
 async def back1(message: Message):
@@ -162,4 +168,6 @@ async def back1(message: Message):
         "👤 Для связи: @slimnoob,@xba16",
         reply_markup=main_menu
     )
+
+
 

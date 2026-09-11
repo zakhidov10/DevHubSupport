@@ -3,6 +3,7 @@ from aiogram.types import Message
 from os import getenv
 from aiogram import Bot
 from keyboards import Keyboards
+from database.database import add_ticket
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,6 +17,17 @@ async def finish_support(message: Message, state:FSMContext, bot: Bot, keyboard)
     data = await state.get_data()
     user = message.from_user
     user_name = f'@{user.username}' if user.username else 'Нету username'
+
+
+    ticket_id = await add_ticket(
+        user_id=user.id,
+        username=user.username or "",
+        full_name=user.full_name,
+        support_type=data["support_type"],
+        text=data["text"],
+        photo_id=data.get("photo")
+    )
+
 
     caption = (f"Новый тикет #{ticket_counter}\n"
         f"Тип обращения: {data['support_type']}\n"

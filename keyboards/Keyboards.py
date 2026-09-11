@@ -11,7 +11,8 @@ keyboard = ReplyKeyboardMarkup(
 )
 choice_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Вопрос"), KeyboardButton(text="Жалоба")]
+        [KeyboardButton(text="Вопрос"), KeyboardButton(text="Жалоба")], 
+        [KeyboardButton(text="Вернуться в главное меню 🏠")]
     ],
     resize_keyboard=True
 )
@@ -41,6 +42,13 @@ faq_choice = ReplyKeyboardMarkup(
 back = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Вернуться назад 🔙")]
+    ],
+    resize_keyboard=True
+)
+
+cancel_button= ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Отмена")]
     ],
     resize_keyboard=True
 )

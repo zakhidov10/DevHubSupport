@@ -15,4 +15,4 @@ async def reply_to_ticket(message: Message, bot: Bot):
         return
 
     await bot.send_message(chat_id=user_id, text=f"Ответ от администратора: \n\n{message.text}")
-    await message.answer("Ответ отправлен пользователю.")
+    await message.answer("Ответ отправлен пользователю.")   
