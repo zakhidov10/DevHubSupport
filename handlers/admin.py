@@ -18,7 +18,7 @@ async def reply_to_ticket(message: Message, bot: Bot):
         original_message_id
     )
     if ticket is None:
-        await message.amswer("Не удалось найти тикет.")
+        await message.answer("Не удалось найти тикет.")
         return
     ticket_id = ticket[0]
     user_id = ticket[1]
@@ -31,7 +31,7 @@ async def reply_to_ticket(message: Message, bot: Bot):
         await message.answer("Не удалось найти пользователя для этого тикета.")
         return
 
-    await bot.send_message(chat_id=user_id, text=f"Ответ от администратора: \n\n{message.text}")
+    await bot.send_message(chat_id=user_id, text=f"Ответ от администратора на ваше обрашение #{ticket_id}: \n\n{message.text}")
     await add_ticket_message(
         ticket_id=ticket_id,
         sender_id=message.from_user.id,

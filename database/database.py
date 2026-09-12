@@ -53,6 +53,14 @@ async def init_db():
                 "ALTER TABLE tickets ADD COLUMN admin_message_id INTEGER"
             )
 
+        if "status" not in columns:
+            await db.execute(
+        """
+        ALTER TABLE tickets
+        ADD COLUMN status TEXT NOT NULL DEFAULT 'open'
+        """
+    )
+
         await db.execute("""
             CREATE TABLE IF NOT EXISTS ticket_messages (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

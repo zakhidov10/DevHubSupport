@@ -5,11 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
 from handlers.routes import router
 from database.database import init_db
+from handlers.admin import router as admin_router
+
 
 TOKEN = getenv("BOT_TOKEN")
 ADMIN = getenv("ADMIN_USER_ID")
 dp = Dispatcher()
 dp.include_router(router)
+dp.include_router(admin_router)
 
 async def main():
     await init_db()
