@@ -264,3 +264,140 @@ async def get_ticket_messages(ticket_id: int):
         """, (ticket_id,))
 
         return await cursor.fetchall()
+
+async def get_ticket_counts():
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) AS open_count
+            FROM tickets
+        """)
+
+        row = await cursor.fetchone()
+
+        return {
+            "total": row[0] or 0,
+            "open": row[1] or 0
+        }
+
+
+async def get_tickets(
+    status: str | None = None,
+    support_type: str | None = None
+):
+    async with aiosqlite.connect(DB_NAME) as db:
+
+        query = """
+            SELECT
+                id,
+                user_id,
+                support_type,
+                text,
+                status,
+                created_at
+            FROM tickets
+        """
+
+        conditions = []
+        params = []
+
+        if status:
+            conditions.append("status = ?")
+            params.append(status)
+
+        if support_type:
+            conditions.append("support_type = ?")
+            params.append(support_type)
+
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+
+        query += " ORDER BY id DESC"
+
+        cursor = await db.execute(query, params)
+
+        return await cursor.fetchall()
+
+
+async def get_ticket_with_user(ticket_id: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT
+                id,
+                user_id,
+                support_type,
+                text,
+                status,
+                created_at,
+                closed_at
+            FROM tickets
+            WHERE id = ?
+        """, (ticket_id,))
+
+        return await cursor.fetchone()
+
+
+async def reopen_ticket(ticket_id: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute("""
+            UPDATE tickets
+            SET status = 'open',
+                closed_at = NULL
+            WHERE id = ?
+        """, (ticket_id,))
+
+        await db.commit()
+
+async def init_admins():
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS admins (
+                user_id INTEGER PRIMARY KEY,
+                role TEXT NOT NULL CHECK(role IN ('owner', 'admin')),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        await db.commit()
+
+
+async def add_admin(user_id: int, role: str = "admin"):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute("""
+            INSERT OR REPLACE INTO admins (user_id, role)
+            VALUES (?, ?)
+        """, (user_id, role))
+
+        await db.commit()
+
+
+async def remove_admin(user_id: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute("""
+            DELETE FROM admins
+            WHERE user_id = ? AND role = 'admin'
+        """, (user_id,))
+        await db.commit()
+
+
+async def get_admin_role(user_id: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT role
+            FROM admins
+            WHERE user_id = ?
+        """, (user_id,))
+
+        row = await cursor.fetchone()
+        return row[0] if row else None
+
+
+async def get_admins():
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT user_id, role, created_at
+            FROM admins
+            ORDER BY role DESC, created_at ASC
+        """)
+
+        return await cursor.fetchall()

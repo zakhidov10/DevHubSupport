@@ -25,11 +25,10 @@ router = Router()
 # =========================
 
 @router.message(Command("start"))
-async def start(message: Message, state: FSMContext):
-    await state.clear()
-
+async def start(message: Message):
     await message.answer(
-        f"Здравствуйте, {message.from_user.full_name}\n"
+        f"Здравствуйте, {message.from_user.full_name}!\n\n"
+        "Добро пожаловать в DevHub 👋\n"
         "Выберите действие:",
         reply_markup=keyboard
     )
@@ -39,74 +38,46 @@ async def start(message: Message, state: FSMContext):
 # ГЛАВНОЕ МЕНЮ
 # =========================
 
-@router.message(F.text == "Вернуться в главное меню 🏠")
-async def home(message: Message, state: FSMContext):
+@router.message(F.text == "🏠 Главное меню")
+async def home(message: Message):
+    await message.answer(
+        "Главное меню 🏠\n\n"
+        "Выберите действие:",
+        reply_markup=keyboard
+    )
+
+
+@router.message(F.text == "❌ Отмена")
+async def cancelation_button(message: Message, state: FSMContext):
     await state.clear()
 
     await message.answer(
-        "Вы вернулись в главное меню.\n\n"
+        "Действие отменено.\n\n"
         "Выберите действие:",
         reply_markup=keyboard
     )
 
 
 # =========================
-# ОТМЕНА
+# О DEVHUB
 # =========================
 
-@router.message(
-    SupportForm.waiting_question,
-    F.text == "Отмена"
-)
-async def cancel_question(
-    message: Message,
-    state: FSMContext
-):
-    await state.clear()
-
-    await message.answer(
-        "Обращение отменено.\n\n"
-        "Выберите действие:",
-        reply_markup=keyboard
-    )
-
-
-@router.message(
-    SupportForm.waiting_photo,
-    F.text == "Отмена"
-)
-async def cancel_photo(
-    message: Message,
-    state: FSMContext
-):
-    await state.clear()
-
-    await message.answer(
-        "Обращение отменено.\n\n"
-        "Выберите действие:",
-        reply_markup=keyboard
-    )
-
-
-# =========================
-# О НАС
-# =========================
-
-@router.message(F.text == "О нас ℹ️")
+@router.message(F.text == "ℹ️ О DevHub")
 async def about(message: Message):
     await message.answer(
-        "О DevHub\n\n"
-        "DevHub — это платформа для программистов "
-        "и разработчиков, созданная для поиска людей "
-        "в команду и совместной работы над проектами.\n\n"
+        "ℹ️ О DevHub\n\n"
+        "DevHub — платформа для программистов и разработчиков, "
+        "созданная для поиска людей в команду и совместной работы "
+        "над проектами.\n\n"
+
         "💻 Здесь вы можете:\n"
         "• найти разработчиков нужного направления;\n"
         "• рассказать о своих навыках;\n"
         "• найти единомышленников;\n"
         "• собрать команду для своего проекта.\n\n"
-        "🚀 DevHub объединяет людей, которые хотят "
-        "создавать проекты, развиваться в программировании "
-        "и работать вместе.",
+
+        "🚀 DevHub объединяет людей, которые хотят создавать "
+        "проекты и развиваться в программировании.",
         reply_markup=main_menu
     )
 
@@ -115,44 +86,45 @@ async def about(message: Message):
 # FAQ
 # =========================
 
-@router.message(F.text == "FAQ 🔍")
+@router.message(F.text == "❔ FAQ")
 async def faq(message: Message):
     await message.answer(
-        "Выберите раздел вопроса:",
+        "❔ FAQ\n\n"
+        "Выберите интересующий раздел:",
         reply_markup=faq_choice
     )
 
 
-@router.message(F.text == "Основное 📌")
+@router.message(F.text == "📌 Основное")
 async def mainfaq(message: Message):
     await message.answer(
+        "📌 Основное\n\n"
+
         "❓ Что такое DevHub?\n"
         "DevHub — бот для поиска разработчиков "
         "и участников в команду.\n\n"
 
         "🚀 Как начать?\n"
-        "Нажмите /start и заполните свою анкету.\n\n"
+        "Нажмите /start и выберите нужный раздел.\n\n"
 
         "👥 Для кого DevHub?\n"
         "Для разработчиков, дизайнеров и всех, "
-        "кто хочет найти команду или участников "
-        "для проекта.",
+        "кто хочет найти команду или участников проекта.",
         reply_markup=back
     )
 
 
-@router.message(F.text == "Анкета 👤")
+@router.message(F.text == "👤 Анкета")
 async def anketa(message: Message):
     await message.answer(
+        "👤 Анкета\n\n"
+
         "❓ Что нужно указать?\n"
-        "Возраст, имя или ник, информацию о себе, "
-        "опыт, технологии, проекты и GitHub.\n\n"
+        "Имя или ник, информацию о себе, опыт, "
+        "технологии, проекты и GitHub.\n\n"
 
         "✏️ Можно ли изменить анкету?\n"
-        "Да. Вы можете изменить текст или фотографию профиля.\n\n"
-
-        "🔄 Можно ли заполнить анкету заново?\n"
-        "Да. Используйте кнопку «Заполнить анкету заново».\n\n"
+        "Да, информацию можно будет изменить.\n\n"
 
         "🔗 Зачем нужен GitHub?\n"
         "Чтобы другие пользователи могли посмотреть "
@@ -161,42 +133,46 @@ async def anketa(message: Message):
     )
 
 
-@router.message(F.text == "Поиск анкет 🔎")
+@router.message(F.text == "🔎 Поиск анкет")
 async def poisk(message: Message):
     await message.answer(
-        "❓ Как посмотреть других пользователей?\n"
-        "Нажмите «Смотреть анкеты» в меню профиля.\n\n"
+        "🔎 Поиск анкет\n\n"
 
-        "👀 Что видно в анкете?\n"
-        "Фото, имя, возраст, информацию о пользователе "
-        "и ссылку на GitHub.\n\n"
+        "Здесь можно будет просматривать анкеты "
+        "других участников DevHub.\n\n"
 
-        "🤝 Зачем смотреть анкеты?\n"
-        "Чтобы найти подходящих людей для общения "
-        "и совместной работы.",
+        "👀 В анкете могут отображаться:\n"
+        "• имя;\n"
+        "• информация о пользователе;\n"
+        "• технологии;\n"
+        "• проекты;\n"
+        "• GitHub.",
         reply_markup=back
     )
 
 
-@router.message(F.text == "Профиль ⚙️")
+@router.message(F.text == "⚙️ Профиль")
 async def profile(message: Message):
     await message.answer(
-        "❓ Что можно изменить?\n\n"
-        "📸 Фото анкеты — заменить фотографию.\n"
-        "📝 Текст анкеты — изменить информацию о себе.\n"
-        "🔄 Анкету заново — полностью заполнить профиль повторно.",
+        "⚙️ Профиль\n\n"
+
+        "В профиле можно будет изменить:\n"
+        "📸 фотографию;\n"
+        "📝 информацию о себе;\n"
+        "💻 технологии;\n"
+        "🔗 GitHub.",
         reply_markup=back
     )
 
 
-@router.message(F.text == "Проблемы 🛠️")
+@router.message(F.text == "🛠 Проблемы")
 async def problems(message: Message):
     await message.answer(
-        "❓ Указал неправильную информацию. Что делать?\n"
-        "Просто отредактируйте свою анкету.\n\n"
+        "🛠 Проблемы\n\n"
 
-        "🤔 Не понимаю, как пользоваться ботом.\n"
-        "Изучите этот FAQ или обратитесь к администрации DevHub.",
+        "Если вы столкнулись с проблемой или "
+        "не понимаете, как пользоваться ботом, "
+        "обратитесь в поддержку DevHub.",
         reply_markup=back
     )
 
@@ -205,59 +181,34 @@ async def problems(message: Message):
 # НАЗАД В FAQ
 # =========================
 
-@router.message(F.text == "Вернуться назад 🔙")
-async def back_faq(message: Message):
+@router.message(F.text == "🔙 Назад")
+async def back_to_faq(message: Message):
     await message.answer(
-        "Выберите раздел вопроса:",
+        "❔ Выберите раздел:",
         reply_markup=faq_choice
     )
 
 
 # =========================
-# СОТРУДНИЧЕСТВО
+# ПОДДЕРЖКА
 # =========================
 
-@router.message(F.text == "Соотрудничество 🤝")
-async def cooperation(message: Message):
+@router.message(F.text == "💬 Поддержка")
+async def support_menu(message: Message):
     await message.answer(
-        "🤝 Сотрудничество с DevHub\n\n"
-        "Хотите сотрудничать с DevHub, предложить "
-        "совместный проект или обсудить партнёрство?\n\n"
-        "Напишите нам, кратко рассказав о вашем "
-        "предложении и формате сотрудничества.\n\n"
-        "👤 Для связи: @slimnoob, @xba16",
-        reply_markup=main_menu
-    )
-
-
-# =========================
-# ОБРАЩЕНИЕ К АДМИНУ
-# =========================
-
-@router.message(F.text == "Обратиться к администратору 🧑‍💻")
-async def contact_admin(message: Message):
-    await message.answer(
+        "💬 Поддержка\n\n"
         "Выберите тип обращения:",
         reply_markup=choice_keyboard
     )
 
 
-# =========================
-# ТИП ОБРАЩЕНИЯ
-# =========================
-
 @router.message(
-    F.text.in_([
-        "Вопрос",
-        "Жалоба",
-        "Не нашёл нужного раздела ❓"
-    ])
+    F.text.in_({
+        "❓ Вопрос",
+        "⚠️ Жалоба"
+    })
 )
-async def support(
-    message: Message,
-    state: FSMContext
-):
-
+async def support(message: Message, state: FSMContext):
     await state.update_data(
         support_type=message.text
     )
@@ -267,14 +218,10 @@ async def support(
     )
 
     await message.answer(
-        "Пожалуйста, введите текст вашего обращения.",
+        "📝 Опишите вашу проблему или вопрос:",
         reply_markup=cancel_button
     )
 
-
-# =========================
-# ТЕКСТ ОБРАЩЕНИЯ
-# =========================
 
 @router.message(
     SupportForm.waiting_question,
@@ -284,25 +231,20 @@ async def get_text(
     message: Message,
     state: FSMContext
 ):
-
     await state.update_data(
         text=message.text
+    )
+
+    await message.answer(
+        "📷 Хотите добавить фотографию?\n\n"
+        "Если фото нет, нажмите «Пропустить».",
+        reply_markup=skip_keyboard
     )
 
     await state.set_state(
         SupportForm.waiting_photo
     )
 
-    await message.answer(
-        "Спасибо! Теперь отправьте фото "
-        "(если есть) или нажмите «Пропустить».",
-        reply_markup=skip_keyboard
-    )
-
-
-# =========================
-# ФОТО
-# =========================
 
 @router.message(
     SupportForm.waiting_photo,
@@ -313,7 +255,6 @@ async def get_photo(
     state: FSMContext,
     bot: Bot
 ):
-
     await state.update_data(
         photo=message.photo[-1].file_id
     )
@@ -326,23 +267,36 @@ async def get_photo(
     )
 
 
-# =========================
-# ПРОПУСТИТЬ ФОТО
-# =========================
-
 @router.message(
     SupportForm.waiting_photo,
-    F.text == "Пропустить ⏩"
+    F.text == "⏩ Пропустить"
 )
 async def skip_photo(
     message: Message,
     state: FSMContext,
     bot: Bot
 ):
-
     await finish_support(
         message,
         state,
         bot,
         keyboard
+    )
+
+
+# =========================
+# СОТРУДНИЧЕСТВО
+# =========================
+
+@router.message(F.text == "🤝 Сотрудничество")
+async def cooperation(message: Message):
+    await message.answer(
+        "🤝 Сотрудничество с DevHub\n\n"
+
+        "Хотите предложить совместный проект "
+        "или обсудить партнёрство?\n\n"
+
+        "Напишите администрации, кратко описав "
+        "ваше предложение и формат сотрудничества.",
+        reply_markup=main_menu
     )
